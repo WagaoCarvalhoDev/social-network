@@ -18,6 +18,23 @@ services:
       - "3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile # Caminho para o Dockerfile da sua aplicação
+    volumes:
+      - ./backend:/backend
+    working_dir: /backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:
