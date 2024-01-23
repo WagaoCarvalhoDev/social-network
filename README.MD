@@ -1,4 +1,7 @@
 docker compose up -d
+docker system prune
+docker system prune --all --force --volumes
+
 
 # Migrate 
 #### Adicionar a chave GPG para a biblioteca golang-migrate
