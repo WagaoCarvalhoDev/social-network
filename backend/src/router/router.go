@@ -1,8 +1,13 @@
 package router
 
-import "github.com/gorilla/mux"
+import (
+	"backend/src/router/routers"
+
+	"github.com/gorilla/mux"
+)
 
 // Retorna um router com as rotas configuradas
 func NewAPIRouter() *mux.Router {
-	return mux.NewRouter()
+	r := mux.NewRouter()
+	return routers.ConfigRouter(r)
 }
