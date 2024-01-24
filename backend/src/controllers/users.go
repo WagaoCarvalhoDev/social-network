@@ -1,11 +1,35 @@
 package controllers
 
 import (
+	dbmysql "backend/src/db_mysql"
+	"backend/src/models"
+	"backend/src/repositories"
+	"encoding/json"
+	"io"
+	"log"
 	"net/http"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Creating user!"))
+	bodyRequest, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var user models.User
+	if err = json.Unmarshal(bodyRequest, &user); err != nil {
+		log.Fatal(err)
+	}
+
+	db, err := dbmysql.ConnectMySql()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
+	repository := repositories.NewUsersRepository(db)
+	repository.CreateUser(user)
 
 }
 
