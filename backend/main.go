@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/src/config"
 	"backend/src/router"
 	"fmt"
 	"log"
@@ -8,8 +9,12 @@ import (
 )
 
 func main() {
-	fmt.Println("teste")
+	config.SetupEnvironment()
+
+	fmt.Println(config.Port)
+	fmt.Println(config.ServerAddress)
 
 	r := router.NewAPIRouter()
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }
