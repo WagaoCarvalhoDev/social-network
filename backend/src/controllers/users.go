@@ -5,6 +5,7 @@ import (
 	"backend/src/models"
 	"backend/src/repositories"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -29,7 +30,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := repositories.NewUsersRepository(db)
-	repository.CreateUser(user)
+	userId, err := repository.CreateUser(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.Write(([]byte(fmt.Sprintf("Id inserido: %d", userId))))
 
 }
 
