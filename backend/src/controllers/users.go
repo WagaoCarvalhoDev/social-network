@@ -4,38 +4,41 @@ import (
 	dbmysql "backend/src/db_mysql"
 	"backend/src/models"
 	"backend/src/repositories"
+	"backend/src/response"
 	"encoding/json"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	bodyRequest, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal(err)
+		response.Err(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	var user models.User
 	if err = json.Unmarshal(bodyRequest, &user); err != nil {
-		log.Fatal(err)
+		response.Err(w, http.StatusBadRequest, err)
+		return
 	}
 
 	db, err := dbmysql.ConnectMySql()
 	if err != nil {
-		log.Fatal(err)
+		response.Err(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	defer db.Close()
 
 	repository := repositories.NewUsersRepository(db)
-	userId, err := repository.CreateUser(user)
+	user.Id, err = repository.CreateUser(user)
 	if err != nil {
-		log.Fatal(err)
+		response.Err(w, http.StatusInternalServerError, err)
+		return
 	}
 
-	w.Write(([]byte(fmt.Sprintf("Id inserido: %d", userId))))
+	response.ToJson(w, http.StatusCreated, user)
 
 }
 
