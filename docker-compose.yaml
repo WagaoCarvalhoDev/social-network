@@ -1,7 +1,6 @@
 version: '3.1'
 
 services:
-
   db:
     image: mysql
     restart: always
@@ -29,6 +28,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend:/backend
+      - .env:/backend/src/config/.env # Adicione esta linha para copiar o arquivo .env
     working_dir: /backend
     ports:
       - "8080:8080"
