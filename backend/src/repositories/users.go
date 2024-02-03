@@ -3,6 +3,7 @@ package repositories
 import (
 	"backend/src/models"
 	"database/sql"
+	"fmt"
 )
 
 type users struct {
@@ -32,4 +33,38 @@ func (u users) CreateUser(user models.User) (uint64, error) {
 		return 0, err
 	}
 	return uint64(lastInsertId), nil
+}
+
+func (u users) FindByNameOrNick(nameOrNick string) ([]models.User, error) {
+	nameOrNick = fmt.Sprintf("%%%s%%", nameOrNick) // %nomeOuNick%
+
+	rows, err := u.db.Query(
+		"select id, nameUser, nick, email, CreateAt from users where nameUser LIKE ? or nick LIKE ?",
+		nameOrNick, nameOrNick,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+
+	for rows.Next() {
+		var user models.User
+
+		if err = rows.Scan(
+			&user.Id,
+			&user.NameUser,
+			&user.Nick,
+			&user.Email,
+			&user.CreateAt,
+		); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }
