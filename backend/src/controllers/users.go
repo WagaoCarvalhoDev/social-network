@@ -23,6 +23,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err = user.PrepareString(); err != nil {
+		response.Err(w, http.StatusBadRequest, err)
+		return
+	}
+
 	db, err := dbmysql.ConnectMySql()
 	if err != nil {
 		response.Err(w, http.StatusInternalServerError, err)
